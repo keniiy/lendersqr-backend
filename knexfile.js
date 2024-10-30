@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+require('dotenv').config();
+
 module.exports = {
   development: {
     client: 'mysql2',

@@ -1,4 +1,9 @@
 export class CircularDependencyException extends Error {
+  /**
+   * Constructs a CircularDependencyException with an optional context.
+   *
+   * @param context - A string providing context about where the circular dependency was detected.
+   */
   constructor(context?: string) {
     const ctx = context ? ` inside ${context}` : ``;
     super(

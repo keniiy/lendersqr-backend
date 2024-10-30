@@ -26,6 +26,12 @@ export function getModelToken(
   return `${connectionPrefix}${model.name}`;
 }
 
+/**
+ * This function returns a Connection injection token based on the connection name
+ * @param {KnexModuleOptions | string} [connection='default'] This optional parameter is either
+ * a KnexModuleOptions or a string.
+ * @returns {string | Function} The Connection injection token.
+ */
 export function getConnectionToken(
   connection: KnexModuleOptions | string = DEFAULT_CONNECTION_NAME,
 ): string | Function {
@@ -56,6 +62,14 @@ export function getConnectionPrefix(
   return connection.name + '_';
 }
 
+/**
+ * This function will retry a failed connection to the database.
+ * The function will retry {retryAttempts} times, with a delay of
+ * {retryDelay} milliseconds between each retry.
+ * @param retryAttempts The number of times to retry the connection.
+ * @param retryDelay The delay in milliseconds between each retry.
+ * @returns {Function} A function which will retry the connection.
+ */
 export function handleRetry(
   retryAttempts = 9,
   retryDelay = 3000,
@@ -82,6 +96,13 @@ export function handleRetry(
     );
 }
 
+/**
+ * Returns the connection name from the given options object.
+ * If the options object does not contain a name, the default
+ * connection name is returned.
+ * @param options The options object.
+ * @returns The connection name.
+ */
 export function getConnectionName(options: KnexModuleOptions) {
   return options && options.name ? options.name : DEFAULT_CONNECTION_NAME;
 }

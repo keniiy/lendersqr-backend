@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: lendersqr-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: lendersqr_db
+      MYSQL_USER: lendersqr_user
+      MYSQL_PASSWORD: lendersqr_password
+    ports:
+      - '3306:3306'
+    networks:
+      - lendersqr-network
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+networks:
+  lendersqr-network:
+
+volumes:
+  mysql_data:

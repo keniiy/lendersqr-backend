@@ -6,6 +6,12 @@ export const InjectModel = (connection?: string) => {
   return Inject(getConnectionToken(connection));
 };
 
+/**
+ * Inject a connection to the database.
+ *
+ * @param connection The connection name or the KnexModuleOptions to inject.
+ * @returns A ParameterDecorator that injects the specified connection.
+ */
 export const InjectConnection: (
   connection?: KnexModuleOptions | string,
 ) => ParameterDecorator = (connection?: KnexModuleOptions | string) =>

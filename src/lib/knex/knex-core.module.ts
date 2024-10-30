@@ -21,12 +21,24 @@ import { defer, lastValueFrom } from 'rxjs';
 @Global()
 @Module({})
 export class KnexCoreModule implements OnApplicationShutdown {
+  /**
+   * Constructs an instance of KnexCoreModule.
+   *
+   * @param options - The KnexModuleOptions for configuring the Knex connection.
+   * @param moduleRef - The module reference used to resolve dependencies.
+   */
   constructor(
     @Inject(KNEX_MODULE_OPTIONS)
     private readonly options: KnexModuleOptions,
     private readonly moduleRef: ModuleRef,
   ) {}
 
+  /**
+   * Provides a KnexModuleOptions object and a connection provider which can be injected into services.
+   * @param options - The KnexModuleOptions for configuring the Knex connection.
+   * @param connection - The name of the connection to be registered. Defaults to 'default'.
+   * @returns A DynamicModule which provides the connection.
+   */
   public static forRoot(
     options: KnexModuleOptions,
     connection?: string,
@@ -48,6 +60,13 @@ export class KnexCoreModule implements OnApplicationShutdown {
     };
   }
 
+  /**
+   * Creates a DynamicModule which provides a Knex connection.
+   * This method is used when the configuration options are loaded asynchronously.
+   * @param options - The configuration options for the Knex connection.
+   * @param connection - The name of the connection. Defaults to 'default'.
+   * @returns A DynamicModule which provides the connection.
+   */
   public static forRootAsync(
     options: KnexModuleAsyncOptions,
     connection: string = 'default',
@@ -68,6 +87,10 @@ export class KnexCoreModule implements OnApplicationShutdown {
     };
   }
 
+  /**
+   * Closes the Knex connection when the application is being shut down.
+   * @returns A Promise which resolves when the connection has been closed.
+   */
   async onApplicationShutdown(): Promise<any> {
     const connection = this.moduleRef.get<Knex>(
       getConnectionToken(this.options as KnexModuleOptions) as Type<Knex>,
@@ -76,6 +99,18 @@ export class KnexCoreModule implements OnApplicationShutdown {
     connection && (await connection.destroy());
   }
 
+  /**
+   * Creates an array of Providers which will be used to create the KnexModuleOptions
+   * and the Knex connection. If the options.useExisting or options.useFactory
+   * properties are set, it will return an array with a single provider which uses
+   * the createAsyncOptionsProvider method to create the options and the connection.
+   * If the options.useClass property is set, it will return an array with two providers,
+   * one which uses the createAsyncOptionsProvider method to create the options and
+   * the connection, and another which uses the useClass property to create an
+   * instance of the class which implements the KnexOptionsFactory interface.
+   * @param options - The configuration options for the Knex connection.
+   * @returns An array of Providers which will be used to create the Knex connection.
+   */
   public static createAsyncProviders(
     options: KnexModuleAsyncOptions,
   ): Provider[] {
@@ -93,6 +128,13 @@ export class KnexCoreModule implements OnApplicationShutdown {
     ];
   }
 
+  /**
+   * Creates a Provider which will be used to create the KnexModuleOptions
+   * by calling the createKnexOptions method of the class which implements
+   * the KnexOptionsFactory interface.
+   * @param options - The configuration options for the Knex connection.
+   * @returns A Provider which will be used to create the Knex connection.
+   */
   public static createAsyncOptionsProvider(
     options: KnexModuleAsyncOptions,
   ): Provider {
@@ -110,6 +152,11 @@ export class KnexCoreModule implements OnApplicationShutdown {
 
     return {
       provide: KNEX_MODULE_OPTIONS,
+      /**
+       * Creates a KnexModuleOptions by calling the createKnexOptions method of the class which implements the KnexOptionsFactory interface.
+       * @param optionsFactory - The class which implements the KnexOptionsFactory interface.
+       * @returns A Promise which resolves with the KnexModuleOptions to be used to create the Knex connection.
+       */
       useFactory: async (
         optionsFactory: KnexOptionsFactory,
       ): Promise<KnexModuleOptions> => {
@@ -119,6 +166,13 @@ export class KnexCoreModule implements OnApplicationShutdown {
     };
   }
 
+  /**
+   * Creates a Knex connection by calling the knex function with the given config.
+   * If the connection fails, it will retry the connection {retryAttempts} times
+   * with a delay of {retryDelay} milliseconds between each retry.
+   * @param options - The configuration options for the Knex connection.
+   * @returns A Promise which resolves with the created Knex connection.
+   */
   private static async createConnectionFactory(
     options: KnexModuleOptions,
   ): Promise<Knex> {
