@@ -50,7 +50,7 @@ export class KnexCoreModule implements OnApplicationShutdown {
 
   public static forRootAsync(
     options: KnexModuleAsyncOptions,
-    connection: string,
+    connection: string = 'default',
   ): DynamicModule {
     const connectionProvider: Provider = {
       provide: getConnectionToken(connection),
@@ -104,7 +104,6 @@ export class KnexCoreModule implements OnApplicationShutdown {
       };
     }
 
-    // `as Type<KnexOptionsFactory>` is a workaround for microsoft/TypeScript#31603
     const inject = [
       (options.useClass || options.useExisting) as Type<KnexOptionsFactory>,
     ];
