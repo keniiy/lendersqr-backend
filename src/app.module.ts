@@ -7,6 +7,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { APP_GUARD } from '@nestjs/core';
+import { AuthModule } from './cmd/auth/auth.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { APP_GUARD } from '@nestjs/core';
       guard: { mount: true },
     }),
     DalModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [

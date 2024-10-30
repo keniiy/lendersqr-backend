@@ -1,3 +1,3 @@
 export * from './common';
-export * from './common/interfaces';
-export * from './knex/knex.module';
+export * from './dal';
+export * from './knex';
