@@ -27,7 +27,7 @@ export abstract class AbstractRepository<T> {
    * @param id The record ID to retrieve.
    * @returns A promise that resolves to the record if found, or null if it does not exist.
    */
-  async findById(id: number): Promise<T | null> {
+  async findById(id: number | string): Promise<T | null> {
     return this.knex(this.tableName).where({ id }).first();
   }
 
@@ -48,7 +48,7 @@ export abstract class AbstractRepository<T> {
    * @param id The record ID to update.
    * @param data The data to update the record with.
    */
-  async update(id: number, data: Partial<T>): Promise<void> {
+  async update(id: number | string, data: Partial<T>): Promise<void> {
     await this.knex(this.tableName).where({ id }).update(data);
   }
 
@@ -57,7 +57,7 @@ export abstract class AbstractRepository<T> {
    *
    * @param id The record ID to delete.
    */
-  async delete(id: number): Promise<void> {
+  async delete(id: number | string): Promise<void> {
     await this.knex(this.tableName).where({ id }).delete();
   }
 }

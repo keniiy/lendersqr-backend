@@ -9,6 +9,8 @@ exports.up = function (knex) {
     table.string('email').notNullable();
     table.string('password').notNullable();
     table.string('is_active').defaultTo('true');
+    table.string('session_token').nullable();
+    table.timestamp('session_expires_at').nullable();
     table.timestamps(true, true);
   });
 };

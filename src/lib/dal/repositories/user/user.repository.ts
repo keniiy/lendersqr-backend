@@ -1,10 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { AbstractRepository } from '../abstract/abstract.repository';
 import * as bcrypt from 'bcrypt';
-import { KNEX_CONNECTION } from 'src/lib/common/constants/knex.constants';
 import { Knex } from 'knex';
 import { IUser } from 'src/lib/common/interfaces/user.interface';
-import { getConnectionToken } from 'src/lib';
+import { asyncWrapper } from 'src/lib';
+import { getConnectionToken } from 'src/lib/common/utils/knex.util';
 
 @Injectable()
 export class UserRepository extends AbstractRepository<IUser> {
@@ -56,5 +56,38 @@ export class UserRepository extends AbstractRepository<IUser> {
       return { ...user, wallet };
     }
     return null;
+  }
+
+  /**
+   * Updates the session token for a user.
+   *
+   * @param userId The ID of the user whose session token should be updated.
+   * @param sessionToken The new session token to assign to the user.
+   * @param expiresAt The date and time when the new session token expires.
+   */
+
+  async updateSessionToken(
+    userId: number,
+    sessionToken: string,
+    expiresAt: Date,
+  ): Promise<void> {
+    await asyncWrapper(async () => {
+      await this.knex('users')
+        .where({ id: userId })
+        .update({ session_token: sessionToken, session_expires_at: expiresAt });
+    });
+  }
+
+  /**
+   * Clears the session token and its expiration date for a user.
+   *
+   * @param userId The ID of the user whose session token should be cleared.
+   */
+  async clearSessionToken(userId: number | string): Promise<void> {
+    await asyncWrapper(async () => {
+      await this.knex('users')
+        .where({ id: userId })
+        .update({ session_token: null, session_expires_at: null });
+    });
   }
 }

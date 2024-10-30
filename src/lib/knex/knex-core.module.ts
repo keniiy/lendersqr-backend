@@ -91,12 +91,15 @@ export class KnexCoreModule implements OnApplicationShutdown {
    * Closes the Knex connection when the application is being shut down.
    * @returns A Promise which resolves when the connection has been closed.
    */
-  async onApplicationShutdown(): Promise<any> {
-    const connection = this.moduleRef.get<Knex>(
-      getConnectionToken(this.options as KnexModuleOptions) as Type<Knex>,
-    );
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    connection && (await connection.destroy());
+  async onApplicationShutdown(): Promise<void> {
+    const connectionToken = getConnectionToken(this.options.name || 'default');
+    const connection = this.moduleRef.get<Knex>(connectionToken, {
+      strict: false,
+    });
+
+    if (connection) {
+      await connection.destroy();
+    }
   }
 
   /**

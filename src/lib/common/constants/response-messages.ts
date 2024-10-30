@@ -7,6 +7,15 @@ export class ResponseMessage {
     LOGIN_SUCCESS: 'Login successful',
     LOGOUT_SUCCESS: 'Logout successful',
     REGISTRATION_SUCCESS: 'Registration successful',
+    REFRESH_TOKEN_SUCCESS: 'Refresh token generated successfully',
+    INVALID_PASSWORD: 'Invalid password',
+    CHANGE_PASSWORD_SUCCESS: 'Password changed successfully',
+    PASSWORD_MISMATCH: 'Passwords do not match',
+  };
+
+  static TOKEN = {
+    UNABLE_TO_GENERATE_TOKEN: 'Unable to generate token',
+    INVALID_OR_EXPIRED_TOKEN: 'Invalid or expired token',
   };
 
   static PASSWORD = {
@@ -26,5 +35,6 @@ export class ResponseMessage {
 
   static DYNAMIC = {
     ALREADY_EXISTS: (entity: string): string => `${entity} already exists`,
+    NOT_FOUND: (entity: string): string => `${entity} not found`,
   };
 }

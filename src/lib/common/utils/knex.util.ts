@@ -27,18 +27,19 @@ export function getModelToken(
 }
 
 /**
- * This function returns a Connection injection token based on the connection name
- * @param {KnexModuleOptions | string} [connection='default'] This optional parameter is either
- * a KnexModuleOptions or a string.
- * @returns {string | Function} The Connection injection token.
+ * This function returns a Knex Connection injection token based on the provided connection name.
+ * @param {KnexModuleOptions | string} [connection='default'] - This optional parameter can be either
+ * a KnexModuleOptions object or a string that represents the connection name.
+ * @returns {string} - The formatted Knex connection injection token.
  */
 export function getConnectionToken(
   connection: KnexModuleOptions | string = DEFAULT_CONNECTION_NAME,
-): string | Function {
-  if (typeof connection === 'string') {
-    return connection;
-  }
-  return `${connection.name || DEFAULT_CONNECTION_NAME}`;
+): string {
+  const connectionName =
+    typeof connection === 'string'
+      ? connection
+      : connection.name || DEFAULT_CONNECTION_NAME;
+  return `KNEX_CONNECTION_${connectionName.toUpperCase()}`;
 }
 
 /**
