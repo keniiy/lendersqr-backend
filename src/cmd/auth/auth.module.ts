@@ -6,6 +6,7 @@ import {
   AdjutorService,
   DalModule,
   TokenService,
+  JwtPassportStrategy,
 } from 'src/lib';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -21,7 +22,13 @@ import { ConfigService } from '@nestjs/config';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, UserRepository, AdjutorService, TokenService],
+  providers: [
+    AuthService,
+    UserRepository,
+    AdjutorService,
+    TokenService,
+    JwtPassportStrategy,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}
