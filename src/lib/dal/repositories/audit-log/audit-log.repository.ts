@@ -1,6 +1,6 @@
 import { Knex } from 'knex';
 import { AbstractRepository } from '../abstract/abstract.repository';
-import { ITransaction } from 'src/lib/interfaces/transaction.interface';
+import { ITransaction } from 'src/lib/common/interfaces/transaction.interface';
 import { Injectable, Inject } from '@nestjs/common';
 
 @Injectable()

@@ -1,2 +1,4 @@
-export * from './knex.decorators';
-export * from './knex.utils';
+export * from './decorators';
+export * from './exceptions';
+export * from './interfaces';
+export * from './utils';

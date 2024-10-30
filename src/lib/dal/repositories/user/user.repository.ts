@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { AbstractRepository } from '../abstract/abstract.repository';
 import * as bcrypt from 'bcrypt';
 import { Knex } from 'knex';
-import { IUser } from 'src/lib/interfaces/user.interface';
+import { IUser } from 'src/lib/common/interfaces/user.interface';
 
 @Injectable()
 export class UserRepository extends AbstractRepository<IUser> {

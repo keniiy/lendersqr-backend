@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import { KnexModuleOptions } from '../interfaces';
-import { DEFAULT_CONNECTION_NAME } from '../knex/knex.constants';
+import { DEFAULT_CONNECTION_NAME } from '../../knex/knex.constants';
 import { Observable } from 'rxjs';
 import { delay, retryWhen, scan } from 'rxjs/operators';
 import { randomUUID } from 'node:crypto';

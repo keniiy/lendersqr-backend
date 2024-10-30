@@ -1,4 +1,4 @@
-import { ITransaction } from 'src/lib/interfaces/transaction.interface';
+import { ITransaction } from 'src/lib/common/interfaces/transaction.interface';
 import { AbstractRepository } from '../abstract/abstract.repository';
 import { Knex } from 'knex';
 import { Inject, Injectable } from '@nestjs/common';

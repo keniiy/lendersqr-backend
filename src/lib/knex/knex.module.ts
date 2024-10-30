@@ -1,6 +1,9 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { KnexCoreModule } from './knex-core.module';
-import { KnexModuleAsyncOptions, KnexModuleOptions } from '../interfaces';
+import {
+  KnexModuleAsyncOptions,
+  KnexModuleOptions,
+} from '../common/interfaces';
 
 @Module({})
 export class KnexModule {
