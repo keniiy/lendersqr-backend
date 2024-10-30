@@ -1,8 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { AbstractRepository } from '../abstract/abstract.repository';
 import * as bcrypt from 'bcrypt';
+import { KNEX_CONNECTION } from 'src/lib/common/constants/knex.constants';
 import { Knex } from 'knex';
 import { IUser } from 'src/lib/common/interfaces/user.interface';
+import { getConnectionToken } from 'src/lib';
 
 @Injectable()
 export class UserRepository extends AbstractRepository<IUser> {
@@ -11,7 +13,7 @@ export class UserRepository extends AbstractRepository<IUser> {
    *
    * @param knex The Knex database connection to be used by the repository.
    */
-  constructor(@Inject('KNEX_CONNECTION') knex: Knex) {
+  constructor(@Inject(getConnectionToken('default')) knex: Knex) {
     super(knex, 'users');
   }
 
@@ -22,12 +24,22 @@ export class UserRepository extends AbstractRepository<IUser> {
    * @param data The partial data object to insert into the database.
    * @returns A promise that resolves with the ID of the newly created record.
    */
-  async create(data: Partial<IUser>): Promise<number> {
+  async createUser(data: Partial<IUser>): Promise<number> {
     if (data.password) {
       const saltRounds = 10;
       data.password = await bcrypt.hash(data.password, saltRounds);
     }
     return super.create(data);
+  }
+
+  /**
+   * Finds a user by their email address.
+   *
+   * @param email The email address of the user to find.
+   * @returns A promise that resolves to the user object if found, or null if no user exists with the given email.
+   */
+  async findByEmail(email: string): Promise<IUser | null> {
+    return this.knex('users').where({ email }).first();
   }
 
   /**

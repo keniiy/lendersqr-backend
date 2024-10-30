@@ -1,34 +1,33 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
+import { ErrorResponseDto, HttpSuccess, ResponseMessage } from 'src/lib';
+import { RegisterDto } from './dto/register';
+import { IUser } from 'src/lib/common/interfaces/user.interface';
+import { RegisterResponseDto } from './dto/res/register.dto.res';
 
+@Controller({
+  path: 'auth',
+  version: '1',
+})
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post()
-  create(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.create(createAuthDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.authService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authService.remove(+id);
+  @Post('register')
+  @ApiOperation({ summary: 'Register a new user' })
+  @ApiBody({ type: RegisterDto })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: ResponseMessage.AUTH.REGISTRATION_SUCCESS,
+    type: RegisterResponseDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: `${ResponseMessage.AUTH.BLACKLISTED_USER} or ${ResponseMessage.DYNAMIC.ALREADY_EXISTS('User')}`,
+    type: ErrorResponseDto,
+  })
+  register(@Body() registerDto: RegisterDto): Promise<HttpSuccess<IUser>> {
+    return this.authService.register(registerDto);
   }
 }

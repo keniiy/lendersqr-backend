@@ -26,6 +26,6 @@ import { KnexCoreModule } from '../knex/knex-core.module';
     }),
   ],
   providers: [],
-  exports: [],
+  exports: [KnexCoreModule],
 })
 export class DalModule {}

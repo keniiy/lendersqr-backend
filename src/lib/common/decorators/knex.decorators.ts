@@ -1,6 +1,6 @@
 import { Inject } from '@nestjs/common';
 import { KnexModuleOptions } from '../interfaces/knex-options.interface';
-import { getConnectionToken } from '../utils/knex.utils';
+import { getConnectionToken } from '../utils/knex.util';
 
 export const InjectModel = (connection?: string) => {
   return Inject(getConnectionToken(connection));

@@ -1,9 +1,12 @@
 export class ResponseMessage {
   static AUTH = {
     UNAUTHORIZED: 'Unauthorized Access',
+    BLACKLISTED_USER: 'User is blacklisted in Adjutor Karma',
     INVALID_TOKEN: 'Unauthorized access - invalid token provided',
     LOGIN_INVALID: 'Invalid email or password',
     LOGIN_SUCCESS: 'Login successful',
+    LOGOUT_SUCCESS: 'Logout successful',
+    REGISTRATION_SUCCESS: 'Registration successful',
   };
 
   static PASSWORD = {

@@ -12,7 +12,7 @@ import {
   KnexModuleOptions,
   KnexOptionsFactory,
 } from '../common/interfaces';
-import { getConnectionToken, handleRetry } from '../common/utils/knex.utils';
+import { getConnectionToken, handleRetry } from '../common/utils/knex.util';
 import { KNEX_MODULE_OPTIONS } from '../common/constants/knex.constants';
 import { knex, Knex } from 'knex';
 import { ModuleRef } from '@nestjs/core';
@@ -41,7 +41,7 @@ export class KnexCoreModule implements OnApplicationShutdown {
    */
   public static forRoot(
     options: KnexModuleOptions,
-    connection?: string,
+    connection: string = 'default',
   ): DynamicModule {
     const knexModuleOptions = {
       provide: KNEX_MODULE_OPTIONS,
