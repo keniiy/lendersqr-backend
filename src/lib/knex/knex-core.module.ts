@@ -13,7 +13,7 @@ import {
   KnexOptionsFactory,
 } from '../common/interfaces';
 import { getConnectionToken, handleRetry } from '../common/utils/knex.utils';
-import { KNEX_MODULE_OPTIONS } from './knex.constants';
+import { KNEX_MODULE_OPTIONS } from '../common/constants/knex.constants';
 import { knex, Knex } from 'knex';
 import { ModuleRef } from '@nestjs/core';
 import { defer, lastValueFrom } from 'rxjs';

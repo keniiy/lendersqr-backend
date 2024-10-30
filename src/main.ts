@@ -1,8 +1,12 @@
-import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { IBootstrapAppConfig } from './lib/common/interfaces/bootstrapApp-config';
+import { bootstrapNestApp } from './lib';
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  await app.listen(3000);
-}
-bootstrap();
+const bootstrapConfig: IBootstrapAppConfig = {
+  name: 'LenderSquareAPI',
+  version: '0.0.1',
+  port: parseInt(process.env.PORT) || 3000,
+  bearerAuth: true,
+};
+
+bootstrapNestApp<typeof AppModule>(AppModule, bootstrapConfig);
