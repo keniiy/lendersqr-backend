@@ -6,11 +6,12 @@ export class LoginDto {
     example: 'user@example.com',
     description: 'User email address',
   })
+  @IsNotEmpty({ message: 'Email cannot be empty' })
   @IsEmail({}, { message: 'Email must be valid' })
   email: string;
 
   @ApiProperty({
-    example: 'YourPassword123',
+    example: 'SecurePassword123',
     description: 'Password for the account',
   })
   @IsNotEmpty({ message: 'Password cannot be empty' })

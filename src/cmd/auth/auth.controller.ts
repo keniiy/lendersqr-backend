@@ -22,7 +22,7 @@ import { LoginDto } from './dto/login.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { ChangePasswordResponseDto } from './dto/res/change-password.dto.res';
 import { RefreshTokenResponseDto } from './dto/res/refesh-token.dto.res';
-import { LoginResponseDto } from './dto/res/response.dto.res';
+import { LoginResponseDto } from './dto/res/login.dto.res';
 
 @Controller({
   path: 'auth',
