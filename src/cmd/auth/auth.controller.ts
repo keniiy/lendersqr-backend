@@ -7,7 +7,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiBody,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import {
   CurrentUser,
   ErrorResponseDto,
@@ -28,7 +33,6 @@ import { LoginResponseDto } from './dto/res/login.dto.res';
   path: 'auth',
   version: '1',
 })
-@Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -67,6 +71,7 @@ export class AuthController {
   }
 
   @Post('logout')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Log out the user' })
   @ApiResponse({
