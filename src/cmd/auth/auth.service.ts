@@ -90,6 +90,9 @@ export class AuthService {
       expiresAt,
     );
 
+    user.password = undefined;
+    user.session_token = undefined;
+
     return new HttpSuccess(
       ResponseMessage.AUTH.LOGIN_SUCCESS,
       {

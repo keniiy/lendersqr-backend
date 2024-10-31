@@ -4,6 +4,7 @@ import {
   HttpStatus,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -84,14 +85,13 @@ export class AuthController {
 
   @Post('refresh-token')
   @ApiOperation({ summary: 'Refresh access token' })
-  @ApiBody({ description: 'Refresh token' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: ResponseMessage.AUTH.REFRESH_TOKEN_SUCCESS,
     type: RefreshTokenResponseDto,
   })
   refreshToken(
-    @Body('refreshToken') refreshToken: string,
+    @Query('refreshToken') refreshToken: string,
   ): Promise<HttpSuccess<any>> {
     return this.authService.refreshToken(refreshToken);
   }
