@@ -8,6 +8,7 @@
         "knexfile",
         "lendersqr",
         "nestjs",
+        "previewlanguage",
         "verif"
     ]
 }

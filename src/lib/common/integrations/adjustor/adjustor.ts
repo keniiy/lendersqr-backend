@@ -33,37 +33,50 @@ export class AdjutorService {
    */
   async isUserBlacklisted(identity: string): Promise<boolean> {
     return asyncWrapper(async () => {
-      this.logger.log(`Starting blacklist check for identity: ${identity}`);
+      try {
+        this.logger.log(`Starting blacklist check for identity: ${identity}`);
 
-      const response = await lastValueFrom(
-        this.instance.get(`/${identity}`).pipe(
-          tap(() =>
-            this.logger.log(`Request to Adjutor API for identity: ${identity}`),
+        const response = await lastValueFrom(
+          this.instance.get(`/${identity}`).pipe(
+            tap(() =>
+              this.logger.log(
+                `Request to Adjutor API for identity: ${identity}`,
+              ),
+            ),
+            tap((res) =>
+              this.logger.log(
+                `Adjutor API Response for ${identity}:`,
+                res.data,
+              ),
+            ),
+            catchError((error) => {
+              this.logger.error(
+                `Error from Adjutor API for identity ${identity}:`,
+                error.message,
+              );
+              handleApiError(error, 'AdjutorService');
+              throw error;
+            }),
           ),
-          tap((res) =>
-            this.logger.log(`Adjutor API Response for ${identity}:`, res.data),
-          ),
-          catchError((error) => {
-            this.logger.error(
-              `Error from Adjutor API for identity ${identity}:`,
-              error.message,
-            );
-            handleApiError(error, 'AdjutorService');
-            throw error;
-          }),
-        ),
-      );
-
-      if (
-        response.data.status === 'success' &&
-        response.data.message !== 'Identity not found in karma ecosystem'
-      ) {
-        console.log(
-          `Identity ${identity} found in Karma ecosystem with blacklist status.`,
         );
-        return !!response.data.karma_identity;
-      } else {
-        console.log(`Identity ${identity} not found in Karma ecosystem.`);
+
+        if (
+          response.data.status === 'success' &&
+          response.data.message !== 'Identity not found in karma ecosystem'
+        ) {
+          console.log(
+            `Identity ${identity} found in Karma ecosystem with blacklist status.`,
+          );
+          return !!response.data.karma_identity;
+        } else {
+          console.log(`Identity ${identity} not found in Karma ecosystem.`);
+          return false;
+        }
+      } catch (error) {
+        this.logger.error(
+          `Final catch error for identity ${identity}:`,
+          error.message,
+        );
         return false;
       }
     }, ResponseMessage.ADJUTOR.FAILED_TO_VERIFY_USER_KARMA);

@@ -1,0 +1,238 @@
+{
+  "info": {
+    "name": "Lender API - Auth and Wallet Endpoints",
+    "description": "Detailed Postman collection for Lender API endpoints related to user authentication and wallet operations",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth - Register User",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"user@example.com\",\n    \"password\": \"SecurePassword123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/auth/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "auth", "register"]
+        },
+        "description": "This endpoint allows new users to register by providing their name, email, and password. A successful registration returns a message confirming the registration and user details."
+      },
+      "response": [
+        {
+          "name": "201 Created - Success",
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": "json",
+          "body": "{\n  \"success\": true,\n  \"message\": \"Registration successful\",\n  \"data\": {\n    \"id\": 12,\n    \"name\": \"John Doe\",\n    \"email\": \"user@example.com\"\n  },\n  \"statusCode\": 201\n}"
+        },
+        {
+          "name": "400 Bad Request - User Already Exists",
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": "json",
+          "body": "{\n  \"statusCode\": 400,\n  \"message\": \"User already exists\",\n  \"timestamp\": \"2024-10-31T17:23:08.869Z\",\n  \"path\": \"/api/v1/auth/register\",\n  \"request\": {\n    \"body\": {\n      \"name\": \"John Doe\",\n      \"email\": \"user@example.com\",\n      \"password\": \"SecurePassword123\"\n    }\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Auth - Login User",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"SecurePassword123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "auth", "login"]
+        },
+        "description": "This endpoint allows existing users to log in by providing their email and password. A successful login returns access and refresh tokens."
+      },
+      "response": [
+        {
+          "name": "200 OK - Success",
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "body": "{\n  \"success\": true,\n  \"message\": \"Login successful\",\n  \"data\": {\n    \"user\": {\n      \"id\": 12,\n      \"email\": \"user@example.com\",\n      \"name\": \"John Doe\"\n    },\n    \"accessToken\": \"ACCESS_TOKEN\",\n    \"refreshToken\": \"REFRESH_TOKEN\"\n  },\n  \"statusCode\": 200\n}"
+        },
+        {
+          "name": "401 Unauthorized - Invalid Credentials",
+          "status": "Unauthorized",
+          "code": 401,
+          "_postman_previewlanguage": "json",
+          "body": "{\n  \"statusCode\": 401,\n  \"message\": \"Invalid login credentials\",\n  \"timestamp\": \"2024-10-31T17:23:08.869Z\",\n  \"path\": \"/api/v1/auth/login\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Wallet - Fund Wallet",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"amount\": 1000\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/wallet/fund",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "wallet", "fund"]
+        },
+        "description": "Initiates funding of the user's wallet. The request body includes the amount to be funded. A payment link is returned if successful."
+      },
+      "response": [
+        {
+          "name": "200 OK - Success",
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "body": "{\n  \"success\": true,\n  \"message\": \"Funding initiated\",\n  \"data\": {\n    \"paymentLink\": \"https://payment-link.com\"\n  },\n  \"statusCode\": 200\n}"
+        },
+        {
+          "name": "400 Bad Request - User Not Found or Invalid Amount",
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": "json",
+          "body": "{\n  \"statusCode\": 400,\n  \"message\": \"User not found or amount must be greater than zero\",\n  \"timestamp\": \"2024-10-31T17:23:08.869Z\",\n  \"path\": \"/api/v1/wallet/fund\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Wallet - Transfer Funds",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"identifier\": \"receiver@example.com\",\n    \"amount\": 50\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/wallet/transfer",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "wallet", "transfer"]
+        },
+        "description": "Transfers funds from the user's wallet to another user. The identifier (ID or email) and the amount to transfer are provided in the request."
+      },
+      "response": [
+        {
+          "name": "200 OK - Success",
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "body": "{\n  \"success\": true,\n  \"message\": \"Transfer successful\",\n  \"statusCode\": 200\n}"
+        },
+        {
+          "name": "400 Bad Request - Insufficient Balance or Invalid Transfer",
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": "json",
+          "body": "{\n  \"statusCode\": 400,\n  \"message\": \"Insufficient balance or invalid transfer\",\n  \"timestamp\": \"2024-10-31T17:23:08.869Z\",\n  \"path\": \"/api/v1/wallet/transfer\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Wallet - Withdraw Funds",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"amount\": 100,\n    \"accountNumber\": \"12345678\",\n    \"bankCode\": \"044\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/wallet/withdraw",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "wallet", "withdraw"]
+        },
+        "description": "Withdraws a specified amount from the user's wallet to the provided bank account. Includes bank details in the request."
+      },
+      "response": [
+        {
+          "name": "200 OK - Success",
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "body": "{\n  \"success\": true,\n  \"message\": \"Withdrawal successful\",\n  \"statusCode\": 200\n}"
+        },
+        {
+          "name": "400 Bad Request - Insufficient Balance or Invalid Amount",
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": "json",
+          "body": "{\n  \"statusCode\": 400,\n  \"message\": \"Insufficient balance or amount must be greater than zero\",\n  \"timestamp\": \"2024-10-31T17:23:08.869Z\",\n  \"path\": \"/api/v1/wallet/withdraw\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Wallet - Get Balance",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/wallet/balance",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "wallet", "balance"]
+        },
+        "description": "Retrieves the current balance of the user's wallet."
+      },
+      "response": [
+        {
+          "name": "200 OK - Success",
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "body": "{\n  \"success\": true,\n  \"message\": \"Balance retrieved\",\n  \"data\": {\n    \"balance\": 5000\n  },\n  \"statusCode\": 200\n}"
+        },
+        {
+          "name": "404 Not Found - Wallet Not Found",
+          "status": "Not Found",
+          "code": 404,
+          "_postman_previewlanguage": "json",
+          "body": "{\n  \"statusCode\": 404,\n  \"message\": \"Wallet not found\",\n  \"timestamp\": \"2024-10-31T17:23:08.869Z\",\n  \"path\": \"/api/v1/wallet/balance\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Wallet - Get Supported Banks",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/wallet/banks",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "wallet", "banks"]
+        },
+        "description": "Fetches a list of banks supported for wallet operations."
+      },
+      "response": [
+        {
+          "name": "200 OK - Success",
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "body": "{\n  \"success\": true,\n  \"message\": \"Banks retrieved\",\n  \"data\": {\n    \"banks\": [\n      {\n        \"name\": \"Bank A\",\n        \"code\": \"001\"\n      },\n      {\n        \"name\": \"Bank B\",\n        \"code\": \"002\"\n      }\n    ]\n  },\n  \"statusCode\": 200\n}"
+        }
+      ]
+    }
+  ]
+}

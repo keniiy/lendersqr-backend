@@ -73,12 +73,6 @@ export class WalletService {
         ResponseMessage.DYNAMIC.NOT_FOUND('User Wallet'),
       );
 
-    if (fromUserId === toUserId)
-      throw new BadRequestException(ResponseMessage.WALLET.INVALID_TRANSFER);
-
-    if (fromUserId === toUserId)
-      throw new BadRequestException(ResponseMessage.WALLET.INVALID_TRANSFER);
-
     const walletExists = await this.userRepository.findById(toUserId);
 
     if (!walletExists)
