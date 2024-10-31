@@ -49,8 +49,12 @@ export class AuthService {
     const isBlacklisted =
       await this.adjutorService.isUserBlacklisted(normalizedEmail);
 
-    if (isBlacklisted)
+    console.log(`Blacklist check for ${normalizedEmail}: ${isBlacklisted}`);
+
+    if (isBlacklisted) {
+      console.warn(`User with email ${normalizedEmail} is blacklisted`);
       throw new BadRequestException(ResponseMessage.AUTH.BLACKLISTED_USER);
+    }
 
     const newUser = await this.userRepository.createUser({
       email: normalizedEmail,

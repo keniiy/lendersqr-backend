@@ -1,11 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { lastValueFrom } from 'rxjs';
+import { catchError, lastValueFrom, tap } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import axios from 'axios';
 import { handleApiError } from '../../utils/api-util';
+import { asyncWrapper, ResponseMessage } from 'src/lib';
 @Injectable()
 export class AdjutorService {
+  private readonly logger = new Logger(AdjutorService.name);
   private readonly API_URL =
     'https://adjutor.lendsqr.com/v2/verification/karma';
   private readonly ADJUTOR_SECRET_KEY: string =
@@ -25,19 +27,45 @@ export class AdjutorService {
   constructor(private readonly configService: ConfigService) {}
 
   /**
-   * Checks if a user is blacklisted based on their identity
-   * @param identity - The user's identity (email, phone number, etc.)
+   * Checks if a user is blacklisted based on their identity.
+   * @param identity - email or ID of the user to check
+   * @returns true if the user is blacklisted, otherwise false
    */
   async isUserBlacklisted(identity: string): Promise<boolean> {
-    //TODO: wrap with async wrapper
-    try {
+    return asyncWrapper(async () => {
+      this.logger.log(`Starting blacklist check for identity: ${identity}`);
+
       const response = await lastValueFrom(
-        this.instance.get(`/${identity}`).pipe(),
+        this.instance.get(`/${identity}`).pipe(
+          tap(() =>
+            this.logger.log(`Request to Adjutor API for identity: ${identity}`),
+          ),
+          tap((res) =>
+            this.logger.log(`Adjutor API Response for ${identity}:`, res.data),
+          ),
+          catchError((error) => {
+            this.logger.error(
+              `Error from Adjutor API for identity ${identity}:`,
+              error.message,
+            );
+            handleApiError(error, 'AdjutorService');
+            throw error;
+          }),
+        ),
       );
-      return !!response.data.karma_identity; // Returns true if identity is found in Karma
-    } catch (error) {
-      handleApiError(error, 'AdjutorService');
-      return false;
-    }
+
+      if (
+        response.data.status === 'success' &&
+        response.data.message !== 'Identity not found in karma ecosystem'
+      ) {
+        console.log(
+          `Identity ${identity} found in Karma ecosystem with blacklist status.`,
+        );
+        return !!response.data.karma_identity;
+      } else {
+        console.log(`Identity ${identity} not found in Karma ecosystem.`);
+        return false;
+      }
+    }, ResponseMessage.ADJUTOR.FAILED_TO_VERIFY_USER_KARMA);
   }
 }

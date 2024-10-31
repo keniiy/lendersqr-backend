@@ -13,6 +13,10 @@ export class ResponseMessage {
     PASSWORD_MISMATCH: 'Passwords do not match',
   };
 
+  static ADJUTOR = {
+    FAILED_TO_VERIFY_USER_KARMA: 'Failed to verify user karma',
+  };
+
   static TOKEN = {
     UNABLE_TO_GENERATE_TOKEN: 'Unable to generate token',
     INVALID_OR_EXPIRED_TOKEN: 'Invalid or expired token',
