@@ -62,10 +62,29 @@ export class WalletService {
     fromUserId: number,
     transferFundsDto: TransferFundsDto,
   ): Promise<HttpSuccess<void>> {
-    const { toUserId, amount } = transferFundsDto;
+    const { identifier, amount } = transferFundsDto;
+
+    const toInfo = await this.resolveUser(identifier);
+
+    const toUserId = toInfo.id;
+
+    if (!toUserId)
+      throw new BadRequestException(
+        ResponseMessage.DYNAMIC.NOT_FOUND('User Wallet'),
+      );
 
     if (fromUserId === toUserId)
       throw new BadRequestException(ResponseMessage.WALLET.INVALID_TRANSFER);
+
+    if (fromUserId === toUserId)
+      throw new BadRequestException(ResponseMessage.WALLET.INVALID_TRANSFER);
+
+    const walletExists = await this.userRepository.findById(toUserId);
+
+    if (!walletExists)
+      throw new BadRequestException(
+        ResponseMessage.DYNAMIC.NOT_FOUND('User Wallet'),
+      );
 
     await this.walletRepository.transferFunds(fromUserId, toUserId, amount);
 
@@ -129,5 +148,20 @@ export class WalletService {
       { banks },
       HttpStatus.OK,
     );
+  }
+
+  /**
+   * Resolves a user by ID or email.
+   * @param identifier - User ID or email address.
+   * @returns The user object with the resolved ID.
+   */
+  private async resolveUser(
+    identifier: number | string,
+  ): Promise<{ id: number }> {
+    const user = await this.userRepository.findByEmail(identifier as string);
+
+    if (!user) return { id: Number(identifier) };
+
+    return { id: user.id };
   }
 }
