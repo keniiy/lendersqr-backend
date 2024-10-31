@@ -179,7 +179,7 @@ export class AuthService {
       throw new UnauthorizedException(ResponseMessage.AUTH.INVALID_PASSWORD);
 
     await asyncWrapper(async () => {
-      await this.userRepository.update(userId, { password: newPassword });
+      await this.userRepository.updatePassword(userId, newPassword);
     }, ResponseMessage.AUTH.CHANGE_PASSWORD_SUCCESS);
 
     return new HttpSuccess(

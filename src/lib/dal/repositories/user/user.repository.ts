@@ -90,4 +90,25 @@ export class UserRepository extends AbstractRepository<IUser> {
         .update({ session_token: null, session_expires_at: null });
     });
   }
+
+  /**
+   * Updates the user's password.
+   *
+   * Hashes the provided password and updates it in the database
+   * for the user with the specified ID.
+   *
+   * @param userId The ID of the user whose password should be updated.
+   * @param password The new password to set for the user.
+   * @returns A promise that resolves when the password has been updated.
+   */
+  async updatePassword(
+    userId: number | string,
+    password: string,
+  ): Promise<void> {
+    await asyncWrapper(async () => {
+      await this.knex('users')
+        .where({ id: userId })
+        .update({ password: await bcrypt.hash(password, 10) });
+    });
+  }
 }

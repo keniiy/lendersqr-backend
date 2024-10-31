@@ -97,6 +97,7 @@ export class AuthController {
   }
 
   @Patch('change-password')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Change user password' })
   @ApiBody({ type: ChangePasswordDto })
