@@ -18,6 +18,13 @@ export class ResponseMessage {
     INVALID_OR_EXPIRED_TOKEN: 'Invalid or expired token',
   };
 
+  static FLUTTERWAVE_PAYMENT = {
+    SUCCESS: 'Payment successful',
+    FAILURE: 'Payment failed',
+    FAILED_TO_INITIATE_PAYMENT: 'Failed to initiate payment',
+    FAILED_TO_VERIFY_PAYMENT: 'Failed to verify payment',
+  };
+
   static PASSWORD = {
     CHANGE_SUCCESS:
       'Password changed successfully. You can login anytime with your new password',
