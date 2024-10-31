@@ -116,4 +116,18 @@ export class WalletService {
       HttpStatus.OK,
     );
   }
+
+  /**
+   * Retrieves a list of supported banks for fund transfer.
+   * @returns Success response with the list of banks
+   */
+  async getSupportedBanks(): Promise<HttpSuccess<any>> {
+    const banks = await this.flutterWaveService.getBankList();
+
+    return new HttpSuccess(
+      ResponseMessage.DYNAMIC.SUCCESS('Banks retrieved'),
+      { banks },
+      HttpStatus.OK,
+    );
+  }
 }

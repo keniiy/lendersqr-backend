@@ -23,6 +23,7 @@ import { FundWalletResponseDto } from './dto/res/fund-wallet.dto.res';
 import { TransferFundsResponseDto } from './dto/res/transfer-funds.dto.res';
 import { WithdrawResponseDto } from './dto/res/withdraw.dto.res';
 import { BalanceResponseDto } from './dto/res/balance.dto.res';
+import { BankListResponseDto } from './dto/res/bank-list.dto.res';
 
 @Controller({
   path: 'wallet',
@@ -108,5 +109,16 @@ export class WalletController {
     @CurrentUser('id') userId: number,
   ): Promise<HttpSuccess<BalanceResponseDto>> {
     return this.walletService.getBalance(userId);
+  }
+
+  @Get('banks')
+  @ApiOperation({ summary: 'Get list of supported banks' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: ResponseMessage.DYNAMIC.SUCCESS('Banks retrieved'),
+    type: BankListResponseDto,
+  })
+  getSupportedBanks(): Promise<HttpSuccess<BankListResponseDto>> {
+    return this.walletService.getSupportedBanks();
   }
 }

@@ -104,4 +104,15 @@ export class FlutterWaveService {
       return response.data.status === 'success';
     }, ResponseMessage.FLUTTERWAVE_PAYMENT.PAYOUT_FAILED);
   }
+
+  /**
+   * Retrieves a list of supported banks from Flutterwave.
+   * @returns Array of supported banks
+   */
+  async getBankList(): Promise<any[]> {
+    return asyncWrapper(async () => {
+      const response = await lastValueFrom(this.instance.get('/banks/NG'));
+      return response.data.data;
+    }, ResponseMessage.FLUTTERWAVE_PAYMENT.FAILED_TO_FETCH);
+  }
 }
