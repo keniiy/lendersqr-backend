@@ -90,11 +90,15 @@ export class AuthService {
       expiresAt,
     );
 
-    return new HttpSuccess(ResponseMessage.AUTH.LOGIN_SUCCESS, {
-      user,
-      accessToken,
-      refreshToken,
-    });
+    return new HttpSuccess(
+      ResponseMessage.AUTH.LOGIN_SUCCESS,
+      {
+        user,
+        accessToken,
+        refreshToken,
+      },
+      HttpStatus.OK,
+    );
   }
 
   /**
@@ -106,7 +110,11 @@ export class AuthService {
       await this.userRepository.clearSessionToken(userId);
     }, ResponseMessage.AUTH.LOGOUT_SUCCESS);
 
-    return new HttpSuccess(ResponseMessage.AUTH.LOGOUT_SUCCESS);
+    return new HttpSuccess(
+      ResponseMessage.AUTH.LOGOUT_SUCCESS,
+      null,
+      HttpStatus.OK,
+    );
   }
 
   /**
@@ -136,9 +144,13 @@ export class AuthService {
       expiresAt,
     );
 
-    return new HttpSuccess(ResponseMessage.AUTH.REFRESH_TOKEN_SUCCESS, {
-      accessToken,
-    });
+    return new HttpSuccess(
+      ResponseMessage.AUTH.REFRESH_TOKEN_SUCCESS,
+      {
+        accessToken,
+      },
+      HttpStatus.OK,
+    );
   }
 
   /**
@@ -167,6 +179,10 @@ export class AuthService {
       await this.userRepository.update(userId, { password: newPassword });
     }, ResponseMessage.AUTH.CHANGE_PASSWORD_SUCCESS);
 
-    return new HttpSuccess(ResponseMessage.PASSWORD.CHANGE_SUCCESS);
+    return new HttpSuccess(
+      ResponseMessage.PASSWORD.CHANGE_SUCCESS,
+      null,
+      HttpStatus.OK,
+    );
   }
 }

@@ -8,6 +8,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './cmd/auth/auth.module';
+import { WalletModule } from './cmd/wallet/wallet.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { AuthModule } from './cmd/auth/auth.module';
     }),
     DalModule,
     AuthModule,
+    WalletModule,
   ],
   controllers: [AppController],
   providers: [

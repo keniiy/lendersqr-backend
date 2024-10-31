@@ -76,4 +76,32 @@ export class FlutterWaveService {
       return response.data.data.status === 'successful';
     }, ResponseMessage.FLUTTERWAVE_PAYMENT.FAILED_TO_VERIFY_PAYMENT);
   }
+
+  /**
+   * Initiates a payout to the user's bank account.
+   * @param amount - The amount to transfer
+   * @param accountNumber - The recipient's bank account number
+   * @param bankCode - The bank code of the recipient's bank
+   * @returns A boolean indicating success or failure of the payout initiation
+   */
+  async initiatePayout(
+    amount: number,
+    accountNumber: string | number,
+    bankCode: string | number,
+  ): Promise<boolean> {
+    return asyncWrapper(async () => {
+      const response = await lastValueFrom(
+        this.instance.post('/transfers', {
+          account_bank: bankCode,
+          account_number: accountNumber,
+          amount,
+          currency: 'NGN',
+          narration: 'Wallet withdrawal',
+          reference: `withdrawal-${Date.now()}`,
+        }),
+      );
+
+      return response.data.status === 'success';
+    }, ResponseMessage.FLUTTERWAVE_PAYMENT.PAYOUT_FAILED);
+  }
 }

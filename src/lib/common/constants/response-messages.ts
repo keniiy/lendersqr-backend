@@ -23,6 +23,17 @@ export class ResponseMessage {
     FAILURE: 'Payment failed',
     FAILED_TO_INITIATE_PAYMENT: 'Failed to initiate payment',
     FAILED_TO_VERIFY_PAYMENT: 'Failed to verify payment',
+    PAYOUT_FAILED: 'Payout failed',
+  };
+
+  static WALLET = {
+    AMOUNT_MUST_BE_GREATER_THAN_ZERO: 'Amount must be greater than zero',
+    FAILED_TO_FUND_WALLET: 'Failed to fund wallet',
+    INSUFFICIENT_BALANCE: 'Insufficient balance',
+    FAILED_TO_WITHDRAW_FROM_WALLET: 'Failed to withdraw from wallet',
+    FAILED_TO_TRANSFER_FUNDS: 'Failed to transfer funds',
+    FUND_INITIATED: 'Funds initiated successfully',
+    INVALID_TRANSFER: 'Invalid transfer',
   };
 
   static PASSWORD = {
@@ -43,5 +54,6 @@ export class ResponseMessage {
   static DYNAMIC = {
     ALREADY_EXISTS: (entity: string): string => `${entity} already exists`,
     NOT_FOUND: (entity: string): string => `${entity} not found`,
+    SUCCESS: (entity: string): string => `${entity} successfully`,
   };
 }

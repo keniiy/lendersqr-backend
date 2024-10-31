@@ -29,6 +29,7 @@ export class AdjutorService {
    * @param identity - The user's identity (email, phone number, etc.)
    */
   async isUserBlacklisted(identity: string): Promise<boolean> {
+    //TODO: wrap with async wrapper
     try {
       const response = await lastValueFrom(
         this.instance.get(`/${identity}`).pipe(),
