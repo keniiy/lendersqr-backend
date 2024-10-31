@@ -34,6 +34,7 @@ export class ResponseMessage {
     FAILED_TO_TRANSFER_FUNDS: 'Failed to transfer funds',
     FUND_INITIATED: 'Funds initiated successfully',
     INVALID_TRANSFER: 'Invalid transfer',
+    FAILED_TO_LOG_TRANSACTION: 'Failed to log transaction',
   };
 
   static PASSWORD = {
@@ -41,14 +42,10 @@ export class ResponseMessage {
       'Password changed successfully. You can login anytime with your new password',
   };
 
-  static REQUEST = {
-    SUCCESS: 'Request treated successfully',
-    FAILURE: 'Oops! Something went wrong. Try again or contact support',
-  };
-
-  static PROFILE = {
-    NOT_FOUND: 'Profile not found',
-    USER_FOUND: 'User found',
+  static WEBHOOK = {
+    INVALID_SIGNATURE: 'Invalid signature',
+    INVALID_TRANSACTION_DETAILS: 'Invalid transaction details',
+    INVALID_DATA: 'Invalid data',
   };
 
   static DYNAMIC = {

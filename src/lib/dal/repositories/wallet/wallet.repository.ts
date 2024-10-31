@@ -184,4 +184,32 @@ export class WalletRepository extends AbstractRepository<IWallet> {
       ResponseMessage.WALLET.FAILED_TO_TRANSFER_FUNDS,
     );
   }
+
+  /**
+   * Logs a failed payment transaction for tracking and troubleshooting.
+   * @param txRef - The transaction reference ID
+   * @param userId - The user ID for the failed transaction
+   * @param amount - The amount attempted for payment
+   * @param reason - Reason for failure
+   */
+  async logFailedTransaction(
+    txRef: string,
+    userId: string | number,
+    amount: number,
+    reason: string,
+  ): Promise<void> {
+    await transactionWrapper(
+      this.knex,
+      async (trx) => {
+        await trx('failed_transactions').insert({
+          tx_ref: txRef,
+          user_id: userId,
+          amount,
+          reason,
+          created_at: new Date(),
+        });
+      },
+      ResponseMessage.WALLET.FAILED_TO_LOG_TRANSACTION,
+    );
+  }
 }

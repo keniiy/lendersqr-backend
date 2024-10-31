@@ -9,6 +9,7 @@ import { AppService } from './app.service';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './cmd/auth/auth.module';
 import { WalletModule } from './cmd/wallet/wallet.module';
+import { WebhookModule } from './cmd/webhook/webhook.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { WalletModule } from './cmd/wallet/wallet.module';
     DalModule,
     AuthModule,
     WalletModule,
+    WebhookModule,
   ],
   controllers: [AppController],
   providers: [
