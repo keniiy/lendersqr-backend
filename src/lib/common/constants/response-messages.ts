@@ -25,6 +25,7 @@ export class ResponseMessage {
     FAILED_TO_VERIFY_PAYMENT: 'Failed to verify payment',
     PAYOUT_FAILED: 'Payout failed',
     FAILED_TO_FETCH: 'Failed to fetch',
+    INVALID_ACCOUNT_DETAILS: 'Invalid account details',
   };
 
   static WALLET = {

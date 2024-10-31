@@ -8,7 +8,12 @@ import {
   Patch,
 } from '@nestjs/common';
 import { WalletService } from './wallet.service';
-import { ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiBody,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import {
   CurrentUser,
   ErrorResponseDto,
@@ -29,6 +34,7 @@ import { BankListResponseDto } from './dto/res/bank-list.dto.res';
   path: 'wallet',
   version: '1',
 })
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class WalletController {
   constructor(private readonly walletService: WalletService) {}

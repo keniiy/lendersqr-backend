@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
@@ -8,6 +8,7 @@ import { ResponseMessage } from '../../constants';
 
 @Injectable()
 export class FlutterWaveService {
+  private readonly logger = new Logger(FlutterWaveService.name);
   private readonly API_URL = 'https://api.flutterwave.com/v3';
   private readonly FLW_SECRET_KEY: string;
 
@@ -47,15 +48,19 @@ export class FlutterWaveService {
   ): Promise<string> {
     return asyncWrapper(async () => {
       const tx_ref = `fund-${userId}-${Date.now()}`;
+
       const response = await lastValueFrom(
         this.instance.post('/payments', {
           tx_ref,
           amount,
-          currency: 'NGN', // Default currency
+          currency: 'NGN',
           redirect_url:
             this.configService.getOrThrow<string>('FLW_REDIRECT_URL'),
           customer: {
             email,
+          },
+          meta: {
+            consumer_id: userId,
           },
         }),
       );
@@ -65,13 +70,13 @@ export class FlutterWaveService {
 
   /**
    * Verifies the payment status for a given transaction reference.
-   * @param txRef - The transaction reference to verify
+   * @param id - The transaction reference
    * @returns true if the payment was successful, otherwise false
    */
-  async verifyPayment(txRef: string): Promise<boolean> {
+  async verifyPayment(id: string): Promise<boolean> {
     return asyncWrapper(async () => {
       const response = await lastValueFrom(
-        this.instance.get(`/transactions/${txRef}/verify`),
+        this.instance.get(`/transactions/${id}/verify`),
       );
       return response.data.data.status === 'successful';
     }, ResponseMessage.FLUTTERWAVE_PAYMENT.FAILED_TO_VERIFY_PAYMENT);
@@ -89,6 +94,16 @@ export class FlutterWaveService {
     accountNumber: string | number,
     bankCode: string | number,
   ): Promise<boolean> {
+    //NOTE:  Check if in test mode for simulation seems payout doesn't work on test mode
+    const isTestMode = this.configService.get<boolean>('FLW_TEST_MODE', false);
+
+    if (isTestMode) {
+      this.logger.log('Simulated payout: no real transfer occurred');
+      return true;
+    }
+
+    await this.validateAccount(bankCode.toString(), accountNumber.toString());
+
     return asyncWrapper(async () => {
       const response = await lastValueFrom(
         this.instance.post('/transfers', {
@@ -98,9 +113,10 @@ export class FlutterWaveService {
           currency: 'NGN',
           narration: 'Wallet withdrawal',
           reference: `withdrawal-${Date.now()}`,
+          callback: this.configService.getOrThrow<string>('FLW_CALLBACK_URL'),
+          debit_currency: 'NGN',
         }),
       );
-
       return response.data.status === 'success';
     }, ResponseMessage.FLUTTERWAVE_PAYMENT.PAYOUT_FAILED);
   }
@@ -114,5 +130,28 @@ export class FlutterWaveService {
       const response = await lastValueFrom(this.instance.get('/banks/NG'));
       return response.data.data;
     }, ResponseMessage.FLUTTERWAVE_PAYMENT.FAILED_TO_FETCH);
+  }
+
+  /**
+   * Validates the bank account details before initiating a payout.
+   * @param bankCode - The bank code of the recipient's bank
+   * @param accountNumber - The recipient's bank account number
+   * @returns The account details if valid, otherwise throws an error
+   */
+  async validateAccount(bankCode: string, accountNumber: string): Promise<any> {
+    return asyncWrapper(async () => {
+      const response = await lastValueFrom(
+        this.instance.post('/accounts/resolve', {
+          account_bank: bankCode,
+          account_number: accountNumber,
+        }),
+      );
+      if (response.data.status !== 'success') {
+        throw new BadRequestException(
+          ResponseMessage.FLUTTERWAVE_PAYMENT.INVALID_ACCOUNT_DETAILS,
+        );
+      }
+      return response.data.data;
+    }, ResponseMessage.FLUTTERWAVE_PAYMENT.INVALID_ACCOUNT_DETAILS);
   }
 }

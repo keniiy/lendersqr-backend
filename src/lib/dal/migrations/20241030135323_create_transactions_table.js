@@ -13,6 +13,11 @@ exports.up = function (knex) {
       .inTable('wallets')
       .onDelete('CASCADE');
     table.enu('type', ['fund', 'withdraw', 'transfer']).notNullable();
+    table
+      .enum('status', ['successful', 'failed'])
+      .notNullable()
+      .defaultTo('successful');
+    table.string('reason').nullable();
     table.decimal('amount', 10, 2).notNullable();
     table.timestamps(true, true);
   });

@@ -62,11 +62,22 @@ export class WalletRepository extends AbstractRepository<IWallet> {
     await transactionWrapper(
       this.knex,
       async (trx) => {
-        const wallet = await trx('wallets').where({ user_id: userId }).first();
-        if (!wallet)
+        const userExists = await trx('users').where({ id: userId }).first();
+        if (!userExists)
           throw new BadRequestException(
-            ResponseMessage.DYNAMIC.NOT_FOUND('Wallet'),
+            ResponseMessage.DYNAMIC.NOT_FOUND('User'),
           );
+
+        let wallet = await trx('wallets').where({ user_id: userId }).first();
+        if (!wallet) {
+          const [newWalletId] = await trx('wallets')
+            .insert({
+              user_id: userId,
+              balance: 0,
+            })
+            .returning('id');
+          wallet = { id: newWalletId, balance: 0 };
+        }
 
         await trx('wallets')
           .where({ user_id: userId })
@@ -76,6 +87,7 @@ export class WalletRepository extends AbstractRepository<IWallet> {
           wallet_id: wallet.id,
           type: 'fund',
           amount,
+          status: 'successful',
         });
       },
       ResponseMessage.WALLET.FAILED_TO_FUND_WALLET,
@@ -114,7 +126,7 @@ export class WalletRepository extends AbstractRepository<IWallet> {
         await trx('transactions').insert({
           wallet_id: wallet.id,
           type: 'withdraw',
-          amount,
+          amount: -amount,
         });
 
         const payoutStatus = await this.flutterWaveService.initiatePayout(
@@ -152,21 +164,34 @@ export class WalletRepository extends AbstractRepository<IWallet> {
     await transactionWrapper(
       this.knex,
       async (trx) => {
-        const senderWallet = await trx('wallets')
+        let senderWallet = await trx('wallets')
           .where({ user_id: fromUserId })
           .first();
-        const receiverWallet = await trx('wallets')
+
+        if (!senderWallet) {
+          const [newSenderWalletId] = await trx('wallets').insert({
+            user_id: fromUserId,
+            balance: 0,
+          });
+
+          senderWallet = { id: newSenderWalletId, balance: 0 };
+        }
+
+        let receiverWallet = await trx('wallets')
           .where({ user_id: toUserId })
           .first();
 
-        if (!senderWallet || senderWallet.balance < amount)
+        if (!receiverWallet) {
+          const [newReceiverWalletId] = await trx('wallets').insert({
+            user_id: toUserId,
+            balance: 0,
+          });
+          receiverWallet = { id: newReceiverWalletId, balance: 0 };
+        }
+
+        if (senderWallet.balance < amount)
           throw new BadRequestException(
             ResponseMessage.WALLET.INSUFFICIENT_BALANCE,
-          );
-
-        if (!receiverWallet)
-          throw new BadRequestException(
-            ResponseMessage.DYNAMIC.NOT_FOUND('Receiver wallet'),
           );
 
         await trx('wallets')
@@ -177,12 +202,47 @@ export class WalletRepository extends AbstractRepository<IWallet> {
           .increment('balance', amount);
 
         await trx('transactions').insert([
-          { wallet_id: senderWallet.id, type: 'transfer', amount: -amount },
-          { wallet_id: receiverWallet.id, type: 'transfer', amount },
+          {
+            wallet_id: senderWallet.id,
+            type: 'transfer',
+            amount: -amount,
+            status: 'successful',
+          },
+          {
+            wallet_id: receiverWallet.id,
+            type: 'transfer',
+            amount,
+            status: 'successful',
+          },
         ]);
       },
       ResponseMessage.WALLET.FAILED_TO_TRANSFER_FUNDS,
     );
+  }
+
+  /**
+   * Refunds a specified amount to the user's wallet.
+   *
+   * @param userId - The ID of the user whose wallet is being credited.
+   * @param amount - The amount to be refunded.
+   * @param trx - The transaction object to be used for database operations.
+   *               Defaults to the instance's knex configuration if not provided.
+   * @returns A promise that resolves when the refund operation is complete.
+   */
+  async refundUser(
+    userId: number | string,
+    amount: number,
+    trx = this.knex,
+  ): Promise<void> {
+    await trx('wallets')
+      .where({ user_id: userId })
+      .increment('balance', amount);
+    await trx('transactions').insert({
+      wallet_id: userId,
+      type: 'refund',
+      amount,
+      status: 'successful',
+    });
   }
 
   /**
@@ -197,14 +257,16 @@ export class WalletRepository extends AbstractRepository<IWallet> {
     userId: string | number,
     amount: number,
     reason: string,
+    type: string,
   ): Promise<void> {
     await transactionWrapper(
       this.knex,
       async (trx) => {
-        await trx('failed_transactions').insert({
+        await trx('transactions').insert({
           tx_ref: txRef,
           user_id: userId,
           amount,
+          type,
           reason,
           created_at: new Date(),
         });
