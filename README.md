@@ -140,5 +140,8 @@ $ ngrok http 3000
   <li><strong>GET /auth/users</strong> - Retrieves a list of all registered users (Admin only).</li>
 </ul>
 
+<p>POSTMAN COLLECTION: <a href="https://crimson-crater-9979.postman.co/workspace/100f2a60-2055-4fc9-82fb-8f968697c281/overview">LINK</a</p>
+
 <h2>License</h2>
 <p>Nest is <a href="https://github.com/nestjs/nest/blob/master/LICENSE">MIT licensed</a>.</p>
+
