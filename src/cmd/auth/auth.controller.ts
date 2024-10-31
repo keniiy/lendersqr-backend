@@ -20,6 +20,9 @@ import { IUser } from 'src/lib/common/interfaces/user.interface';
 import { RegisterResponseDto } from './dto/res/register.dto.res';
 import { LoginDto } from './dto/login.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { ChangePasswordResponseDto } from './dto/res/change-password.dto.res';
+import { RefreshTokenResponseDto } from './dto/res/refesh-token.dto.res';
+import { LoginResponseDto } from './dto/res/response.dto.res';
 
 @Controller({
   path: 'auth',
@@ -52,7 +55,7 @@ export class AuthController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: ResponseMessage.AUTH.LOGIN_SUCCESS,
-    type: RegisterResponseDto,
+    type: LoginResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
@@ -80,7 +83,7 @@ export class AuthController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: ResponseMessage.AUTH.REFRESH_TOKEN_SUCCESS,
-    type: RegisterResponseDto,
+    type: RefreshTokenResponseDto,
   })
   refreshToken(
     @Body('refreshToken') refreshToken: string,
@@ -95,6 +98,7 @@ export class AuthController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: ResponseMessage.PASSWORD.CHANGE_SUCCESS,
+    type: ChangePasswordResponseDto,
   })
   changePassword(
     @CurrentUser('id') userId: string,
